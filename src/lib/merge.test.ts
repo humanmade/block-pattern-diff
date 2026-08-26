@@ -18,12 +18,12 @@ describe( 'mergeTrees', () => {
 
 		expect( rows.map( ( row ) => row.kind ) ).toEqual( [ 'moved-out', 'added' ] );
 		const stub = rows[ 0 ];
-		expect( stub.diff.before?.label ).toBe( 'Featured stories in Africa' );
+		expect( stub.diff.before?.label ).toBe( 'Featured stories in region' );
 		// The subtree belongs to the new location, so the stub carries none of it.
 		expect( stub.children ).toEqual( [] );
 
 		const wrapper = rows[ 1 ];
-		expect( wrapper.diff.after?.label ).toBe( 'Featured stories well' );
+		expect( wrapper.diff.after?.label ).toBe( 'Featured stories wrap' );
 		expect( wrapper.children.map( ( row ) => row.kind ) ).toEqual( [ 'pair' ] );
 
 		const moved = wrapper.children[ 0 ];

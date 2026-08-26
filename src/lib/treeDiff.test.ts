@@ -16,15 +16,15 @@ describe( 'diffTrees', () => {
 		const { before, after, diff } = run( EXAMPLE_DIFF );
 
 		const originalGroup = before.roots[ 0 ];
-		expect( originalGroup.label ).toBe( 'Featured stories in Africa' );
+		expect( originalGroup.label ).toBe( 'Featured stories in region' );
 
 		const outerGroup = after.roots[ 0 ];
-		expect( outerGroup.label ).toBe( 'Featured stories well' );
+		expect( outerGroup.label ).toBe( 'Featured stories wrap' );
 		expect( diff.byNode.get( outerGroup )?.status ).toBe( 'added' );
 
 		// The original group survives, now nested inside the new wrapper.
 		const counterpart = diff.pairs.get( originalGroup );
-		expect( counterpart?.label ).toBe( 'Featured stories in Africa' );
+		expect( counterpart?.label ).toBe( 'Featured stories in region' );
 		expect( counterpart?.parent ).toBe( outerGroup );
 
 		const groupDiff = diff.byNode.get( originalGroup );
@@ -46,7 +46,7 @@ describe( 'diffTrees', () => {
 		expect( move?.kind ).toBe( 'retargeted' );
 		expect( move?.before ).toBe( 'wide' );
 		expect( move?.after ).toBe( 'full' );
-		expect( move?.to.label ).toBe( 'Featured stories well' );
+		expect( move?.to.label ).toBe( 'Featured stories wrap' );
 	} );
 
 	it( 'treats wrapping a block as a re-parent, with nothing else changed', () => {

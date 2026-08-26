@@ -146,13 +146,13 @@ All rendering builds DOM nodes rather than HTML strings, because every value on 
 Given a hunk that wraps an existing group in a new one, the tool reports:
 
 ```
-↳ group "Featured stories in Africa"       moved to group "Featured stories well"
-▾ + group "Featured stories well"          extends beyond the pasted hunk
-    align: full                            retargeted from group "Featured stories in Africa"
+↳ group "Featured stories in region"       moved to group "Featured stories wrap"
+▾ + group "Featured stories wrap"          extends beyond the pasted hunk
+    align: full                            retargeted from group "Featured stories in region"
     layout.contentSize: 1270px
     layout.type: constrained
-  ▾ ~ group "Featured stories in Africa"   moved here from the top level
-      align: wide                          retargeted to group "Featured stories well"
+  ▾ ~ group "Featured stories in region"   moved here from the top level
+      align: wide                          retargeted to group "Featured stories wrap"
       markup  <div class="wp-block-group alignwide has-white-color …
     · heading "is-style-h4"
 ```

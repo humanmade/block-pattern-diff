@@ -21,7 +21,7 @@ describe( 'renderUnified', () => {
 	it( 'names where a block moved from and to', () => {
 		const { rows, diff } = build( EXAMPLE_DIFF );
 		const text = renderUnified( rows, diff, OPTIONS ).textContent ?? '';
-		expect( text ).toContain( 'moved to group "Featured stories well"' );
+		expect( text ).toContain( 'moved to group "Featured stories wrap"' );
 		expect( text ).toContain( 'moved here from the top level' );
 	} );
 

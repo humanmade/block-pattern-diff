@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Block Pattern Diff</title>
+		<meta
+			name="description"
+			content="Expand a diff of WordPress block pattern markup into a hierarchical view of what actually changed."
+		/>
+	</head>
+	<body>
+		<header class="masthead">
+			<h1>Block Pattern Diff</h1>
+			<p>
+				Paste a diff of WordPress block pattern markup. It is re-parsed as blocks on both
+				sides and compared as a tree, so re-nesting and migrated attributes read as moves
+				rather than as wholesale rewrites. Whitespace-only changes are ignored.
+			</p>
+		</header>
+
+		<main>
+			<section class="panel" aria-label="Input">
+				<div class="tabs" role="tablist">
+					<button type="button" role="tab" class="tab is-active" data-mode="diff">
+						Paste a diff
+					</button>
+					<button type="button" role="tab" class="tab" data-mode="panes">
+						Before / after
+					</button>
+					<span class="tabs__spacer"></span>
+					<button type="button" class="link" id="load-example">Load example</button>
+					<button type="button" class="link" id="clear">Clear</button>
+				</div>
+
+				<div class="input input--diff" data-panel="diff">
+					<textarea
+						id="diff-input"
+						spellcheck="false"
+						placeholder="-&lt;!-- wp:group {&quot;align&quot;:&quot;wide&quot;} --&gt;&#10;+&lt;!-- wp:group {&quot;align&quot;:&quot;full&quot;} --&gt;"
+						aria-label="Unified diff"
+					></textarea>
+				</div>
+
+				<div class="input input--panes is-hidden" data-panel="panes">
+					<label>
+						<span>Before</span>
+						<textarea id="before-input" spellcheck="false" placeholder="Original pattern markup"></textarea>
+					</label>
+					<label>
+						<span>After</span>
+						<textarea id="after-input" spellcheck="false" placeholder="Updated pattern markup"></textarea>
+					</label>
+				</div>
+			</section>
+
+			<section class="panel" aria-label="Result">
+				<div class="toolbar">
+					<div class="views" role="tablist">
+						<button type="button" role="tab" class="tab is-active" data-view="unified">
+							Unified tree
+						</button>
+						<button type="button" role="tab" class="tab" data-view="sbs">Side by side</button>
+					</div>
+					<label class="check">
+						<input type="checkbox" id="show-unchanged" checked />
+						Unchanged blocks
+					</label>
+					<label class="check">
+						<input type="checkbox" id="show-all-attrs" />
+						All attributes
+					</label>
+					<p class="stats" id="stats"></p>
+				</div>
+				<p class="notice is-hidden" id="notice"></p>
+				<div id="output" class="output"></div>
+			</section>
+		</main>
+
+		<footer class="colophon">
+			<a href="https://github.com/humanmade/block-pattern-diff">Source on GitHub</a>
+		</footer>
+
+		<script type="module" src="/src/main.ts"></script>
+	</body>
+</html>

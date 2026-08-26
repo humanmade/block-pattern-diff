@@ -1,0 +1,565 @@
+:root {
+	--bg: #fbfbfa;
+	--surface: #ffffff;
+	--border: #dcdcd6;
+	--text: #1d1d1b;
+	--muted: #6b6b64;
+	--accent: #2b5fd9;
+
+	--added: #14803c;
+	--added-bg: #e7f6ec;
+	--removed: #b3261e;
+	--removed-bg: #fbeae9;
+	--changed: #8a5a00;
+	--changed-bg: #fdf3e0;
+	--moved: #5b3fb5;
+	--moved-bg: #efeafc;
+
+	--mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+@media ( prefers-color-scheme: dark ) {
+	:root {
+		--bg: #16171a;
+		--surface: #1d1f23;
+		--border: #33363c;
+		--text: #e6e6e3;
+		--muted: #9a9a93;
+		--accent: #7ba2ff;
+
+		--added: #58d68d;
+		--added-bg: #16311f;
+		--removed: #f28b82;
+		--removed-bg: #34191a;
+		--changed: #e0b355;
+		--changed-bg: #33280f;
+		--moved: #b39dff;
+		--moved-bg: #241f38;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	padding: 1.5rem clamp( 1rem, 4vw, 3rem ) 3rem;
+	background: var( --bg );
+	color: var( --text );
+	font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.masthead {
+	max-width: 60rem;
+	margin-bottom: 1.5rem;
+}
+
+.masthead h1 {
+	margin: 0 0 0.35rem;
+	font-size: 1.4rem;
+	letter-spacing: -0.01em;
+}
+
+.masthead p {
+	margin: 0;
+	max-width: 52rem;
+	color: var( --muted );
+}
+
+.panel {
+	background: var( --surface );
+	border: 1px solid var( --border );
+	border-radius: 8px;
+	margin-bottom: 1.25rem;
+	overflow: hidden;
+}
+
+/* Input */
+
+.tabs,
+.toolbar {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.4rem 0.6rem;
+	border-bottom: 1px solid var( --border );
+	flex-wrap: wrap;
+}
+
+.tabs__spacer {
+	flex: 1;
+}
+
+.tab {
+	border: 1px solid transparent;
+	background: none;
+	color: var( --muted );
+	font: inherit;
+	font-size: 0.85rem;
+	padding: 0.25rem 0.7rem;
+	border-radius: 5px;
+	cursor: pointer;
+}
+
+.tab:hover {
+	color: var( --text );
+}
+
+.tab.is-active {
+	background: var( --bg );
+	border-color: var( --border );
+	color: var( --text );
+	font-weight: 600;
+}
+
+.link {
+	border: 0;
+	background: none;
+	color: var( --accent );
+	font: inherit;
+	font-size: 0.85rem;
+	cursor: pointer;
+	padding: 0.25rem 0.4rem;
+}
+
+.link:hover {
+	text-decoration: underline;
+}
+
+.input {
+	padding: 0.75rem;
+}
+
+.input--panes {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.75rem;
+}
+
+.input--panes label {
+	display: flex;
+	flex-direction: column;
+	gap: 0.3rem;
+	font-size: 0.8rem;
+	color: var( --muted );
+}
+
+textarea {
+	width: 100%;
+	min-height: 11rem;
+	resize: vertical;
+	padding: 0.6rem 0.7rem;
+	border: 1px solid var( --border );
+	border-radius: 6px;
+	background: var( --bg );
+	color: var( --text );
+	font: 12.5px/1.5 var( --mono );
+	white-space: pre;
+	overflow-wrap: normal;
+	overflow-x: auto;
+}
+
+textarea:focus-visible {
+	outline: 2px solid var( --accent );
+	outline-offset: -1px;
+}
+
+.check {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	font-size: 0.82rem;
+	color: var( --muted );
+	cursor: pointer;
+}
+
+.stats {
+	margin: 0 0 0 auto;
+	font-size: 0.8rem;
+	color: var( --muted );
+	font-variant-numeric: tabular-nums;
+}
+
+.stats b {
+	font-weight: 600;
+}
+
+.stats .s-added {
+	color: var( --added );
+}
+
+.stats .s-removed {
+	color: var( --removed );
+}
+
+.stats .s-changed {
+	color: var( --changed );
+}
+
+.stats .s-moved {
+	color: var( --moved );
+}
+
+.notice {
+	margin: 0;
+	padding: 0.6rem 0.9rem;
+	border-bottom: 1px solid var( --border );
+	background: var( --changed-bg );
+	color: var( --changed );
+	font-size: 0.85rem;
+}
+
+.is-hidden {
+	display: none !important;
+}
+
+.output {
+	padding: 0.75rem;
+	overflow-x: auto;
+}
+
+.empty {
+	margin: 0;
+	padding: 1.5rem;
+	text-align: center;
+	color: var( --muted );
+}
+
+/* Unified tree */
+
+.tree {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.tree .tree {
+	margin-left: 0.65rem;
+	padding-left: 0.7rem;
+	border-left: 1px solid var( --border );
+}
+
+.row {
+	margin: 1px 0;
+}
+
+.row__head {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4rem;
+	flex-wrap: wrap;
+	padding: 0.1rem 0.35rem;
+	border-radius: 4px;
+	font-family: var( --mono );
+	font-size: 12.5px;
+}
+
+.row--added > .row__head {
+	background: var( --added-bg );
+}
+
+.row--removed > .row__head {
+	background: var( --removed-bg );
+}
+
+.row--changed > .row__head {
+	background: var( --changed-bg );
+}
+
+.row--moved > .row__head,
+.row--movedout > .row__head {
+	background: var( --moved-bg );
+}
+
+.row--movedout {
+	opacity: 0.75;
+}
+
+.row.is-collapsed > .tree,
+.row.is-collapsed > .detail {
+	display: none;
+}
+
+.row.is-collapsed > .row__head .twisty {
+	transform: rotate( -90deg );
+}
+
+.twisty {
+	border: 0;
+	background: none;
+	color: var( --muted );
+	cursor: pointer;
+	font-size: 0.7rem;
+	line-height: 1;
+	padding: 0;
+	width: 0.9rem;
+	flex: none;
+	transition: transform 0.12s;
+}
+
+.twisty--empty {
+	visibility: hidden;
+}
+
+.gutter {
+	width: 0.8rem;
+	flex: none;
+	font-weight: 700;
+	color: var( --muted );
+}
+
+.row--added .gutter {
+	color: var( --added );
+}
+
+.row--removed .gutter {
+	color: var( --removed );
+}
+
+.row--changed .gutter {
+	color: var( --changed );
+}
+
+.row--moved .gutter,
+.row--movedout .gutter {
+	color: var( --moved );
+}
+
+.block {
+	font-weight: 600;
+}
+
+.label {
+	color: var( --accent );
+}
+
+.label::before {
+	content: '"';
+}
+
+.label::after {
+	content: '"';
+}
+
+.note {
+	font-family: inherit;
+	font-size: 11px;
+	padding: 0 0.35rem;
+	border-radius: 3px;
+	color: var( --muted );
+	background: var( --bg );
+	border: 1px solid var( --border );
+}
+
+.note--move {
+	color: var( --moved );
+	border-color: currentColor;
+	background: none;
+}
+
+.note--truncated,
+.note--markup {
+	color: var( --muted );
+}
+
+.note--attrmove {
+	color: var( --moved );
+	border-color: currentColor;
+	background: none;
+	margin-left: 0.3rem;
+}
+
+/* Attribute and markup detail */
+
+.detail {
+	margin: 0.1rem 0 0.35rem 1.7rem;
+}
+
+.attrs {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.attr {
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 0.35rem;
+	font-family: var( --mono );
+	font-size: 12px;
+	padding: 0.05rem 0.35rem;
+	border-radius: 3px;
+}
+
+.attr--added {
+	background: var( --added-bg );
+}
+
+.attr--removed {
+	background: var( --removed-bg );
+}
+
+.attr--changed {
+	background: var( --changed-bg );
+}
+
+.attr--unchanged {
+	color: var( --muted );
+}
+
+.attr__path {
+	color: var( --muted );
+}
+
+.attr__path::after {
+	content: ":";
+}
+
+.attr--added .attr__path,
+.attr--removed .attr__path,
+.attr--changed .attr__path {
+	color: inherit;
+	font-weight: 600;
+}
+
+.attr__value {
+	word-break: break-all;
+}
+
+.attr--removed .attr__value,
+.attr__value--old {
+	color: var( --removed );
+	text-decoration: line-through;
+}
+
+.attr--added .attr__value,
+.attr__value--new {
+	color: var( --added );
+}
+
+.attr__arrow {
+	color: var( --muted );
+}
+
+.markup {
+	display: flex;
+	gap: 0.4rem;
+	align-items: baseline;
+	margin-top: 0.2rem;
+	padding: 0.2rem 0.35rem;
+	font-family: var( --mono );
+	font-size: 12px;
+}
+
+.markup__label {
+	flex: none;
+	font-size: 11px;
+	color: var( --muted );
+}
+
+.markup__code {
+	word-break: break-word;
+	white-space: pre-wrap;
+}
+
+.w--add {
+	background: var( --added-bg );
+	color: var( --added );
+	border-radius: 2px;
+}
+
+.w--remove {
+	background: var( --removed-bg );
+	color: var( --removed );
+	text-decoration: line-through;
+	border-radius: 2px;
+}
+
+/* Side by side */
+
+.sbs {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0 0.75rem;
+	min-width: 44rem;
+}
+
+.sbs__head {
+	position: sticky;
+	top: 0;
+	background: var( --surface );
+	border-bottom: 1px solid var( --border );
+	padding: 0.2rem 0.4rem;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	color: var( --muted );
+	z-index: 1;
+}
+
+.cell {
+	display: flex;
+	align-items: baseline;
+	gap: 0.4rem;
+	flex-wrap: wrap;
+	font-family: var( --mono );
+	font-size: 12.5px;
+	padding: 0.12rem 0.35rem;
+	border-radius: 4px;
+	padding-left: calc( 0.35rem + var( --depth, 0 ) * 0.9rem );
+	min-height: 1.5rem;
+}
+
+.cell--added {
+	background: var( --added-bg );
+}
+
+.cell--removed {
+	background: var( --removed-bg );
+}
+
+.cell--changed {
+	background: var( --changed-bg );
+}
+
+.cell--moved,
+.cell--movedout {
+	background: var( --moved-bg );
+}
+
+.cell--empty {
+	background: repeating-linear-gradient(
+		135deg,
+		transparent,
+		transparent 5px,
+		var( --border ) 5px,
+		var( --border ) 6px
+	);
+	opacity: 0.35;
+}
+
+.cell__attrs {
+	font-size: 11px;
+	color: var( --muted );
+}
+
+[data-pair].is-linked {
+	outline: 1px solid var( --moved );
+}
+
+.colophon {
+	font-size: 0.8rem;
+	color: var( --muted );
+}
+
+.colophon a {
+	color: var( --accent );
+}
+
+@media ( max-width: 720px ) {
+	.input--panes {
+		grid-template-columns: 1fr;
+	}
+}

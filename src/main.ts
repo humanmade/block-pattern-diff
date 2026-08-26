@@ -6,6 +6,7 @@ import { EXAMPLE_DIFF } from './lib/example';
 import { mergeTrees, summarize, type DiffStats } from './lib/merge';
 import { diffTrees } from './lib/treeDiff';
 import { fileSection, statChips } from './render/fileSection';
+import { buildSharedUrl, readSharedState, ShareDecodeError } from './lib/share';
 import { renderSideBySide, renderUnified, type ViewOptions } from './render/views';
 
 type Mode = 'diff' | 'panes';
@@ -146,39 +147,107 @@ for ( const field of [ showUnchanged, showAllAttrs ] ) {
 	field.addEventListener( 'change', render );
 }
 
+function setMode( next: Mode ): void {
+	mode = next;
+	document.querySelectorAll< HTMLElement >( '.tabs .tab' ).forEach( ( tab ) => {
+		tab.classList.toggle( 'is-active', tab.dataset.mode === mode );
+	} );
+	document.querySelectorAll< HTMLElement >( '[data-panel]' ).forEach( ( panel ) => {
+		panel.classList.toggle( 'is-hidden', panel.dataset.panel !== mode );
+	} );
+}
+
+function setView( next: View ): void {
+	view = next;
+	document.querySelectorAll< HTMLElement >( '.views .tab' ).forEach( ( tab ) => {
+		tab.classList.toggle( 'is-active', tab.dataset.view === view );
+	} );
+}
+
 document.querySelectorAll< HTMLButtonElement >( '.tabs .tab' ).forEach( ( tab ) => {
 	tab.addEventListener( 'click', () => {
-		mode = tab.dataset.mode as Mode;
-		document
-			.querySelectorAll( '.tabs .tab' )
-			.forEach( ( other ) => other.classList.toggle( 'is-active', other === tab ) );
-		document.querySelectorAll< HTMLElement >( '[data-panel]' ).forEach( ( panel ) => {
-			panel.classList.toggle( 'is-hidden', panel.dataset.panel !== mode );
-		} );
+		setMode( tab.dataset.mode as Mode );
 		render();
 	} );
 } );
 
 document.querySelectorAll< HTMLButtonElement >( '.views .tab' ).forEach( ( tab ) => {
 	tab.addEventListener( 'click', () => {
-		view = tab.dataset.view as View;
-		document
-			.querySelectorAll( '.views .tab' )
-			.forEach( ( other ) => other.classList.toggle( 'is-active', other === tab ) );
+		setView( tab.dataset.view as View );
 		render();
 	} );
 } );
 
+const copyButton = $< HTMLButtonElement >( '#copy-link' );
+copyButton.addEventListener( 'click', async () => {
+	const url = await buildSharedUrl( window.location.href, {
+		diff: mode === 'diff' ? diffInput.value : undefined,
+		before: mode === 'panes' ? beforeInput.value : undefined,
+		after: mode === 'panes' ? afterInput.value : undefined,
+		view,
+	} );
+	const label = copyButton.textContent;
+	try {
+		await navigator.clipboard.writeText( url );
+		copyButton.textContent = 'Copied';
+	} catch {
+		// Clipboard access can be refused; put the link in the address bar so
+		// it can still be copied by hand.
+		window.history.replaceState( null, '', url );
+		copyButton.textContent = 'Link in address bar';
+	}
+	window.setTimeout( () => {
+		copyButton.textContent = label;
+	}, 2000 );
+} );
+
+/**
+ * Fills the form from a link built by buildSharedUrl, so a CI job can point
+ * at a rendered diff. Anything unreadable is reported rather than dropped.
+ */
+async function hydrateFromUrl(): Promise< void > {
+	let state;
+	try {
+		state = await readSharedState( window.location.search );
+	} catch ( error ) {
+		setNotice( [
+			`This link's diff could not be read${
+				error instanceof ShareDecodeError ? `: ${ error.message.toLowerCase() }` : ''
+			}. Paste the diff below instead.`,
+		] );
+		return;
+	}
+	if ( ! state ) {
+		return;
+	}
+	if ( state.view ) {
+		setView( state.view );
+	}
+	if ( state.before !== undefined || state.after !== undefined ) {
+		beforeInput.value = state.before ?? '';
+		afterInput.value = state.after ?? '';
+		setMode( 'panes' );
+	}
+	if ( state.diff !== undefined ) {
+		diffInput.value = state.diff;
+		setMode( 'diff' );
+	}
+	render();
+}
+
 $< HTMLButtonElement >( '#load-example' ).addEventListener( 'click', () => {
 	diffInput.value = EXAMPLE_DIFF;
-	( document.querySelector( '.tabs .tab[data-mode="diff"]' ) as HTMLButtonElement ).click();
+	setMode( 'diff' );
+	render();
 } );
 
 $< HTMLButtonElement >( '#clear' ).addEventListener( 'click', () => {
 	diffInput.value = '';
 	beforeInput.value = '';
 	afterInput.value = '';
+	window.history.replaceState( null, '', window.location.pathname );
 	render();
 } );
 
 render();
+void hydrateFromUrl();

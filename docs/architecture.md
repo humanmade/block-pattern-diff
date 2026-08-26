@@ -161,6 +161,24 @@ One block added, one moved, one attribute retargeted, and a heading left alone. 
 
 The heading survives because it hashes identically and pairs during the anchor pass. The inner group survives because its heading child already paired, which carries the children facet of its similarity score.
 
+## Sharing a diff in a URL
+
+`src/lib/share.ts` encodes a paste into a query parameter so that a CI job can link to a rendered diff, and decodes one on load.
+
+The wire format is a one-character scheme prefix followed by base64url:
+
+- `z` — gzip-compressed UTF-8. This is what `encodeShare()` produces.
+- `u` — plain UTF-8, for links assembled by hand or by a shell script.
+
+Compression carries the feature rather than merely shrinking it. Plain base64 of a twenty-file paste runs past 60 kB, beyond what links reliably survive; the same paste gzips to under 1.5 kB, because serialized block markup repeats itself heavily. `CompressionStream` is available in browsers and in Node, so a GitHub Action can build these links without a dependency.
+
+Two details worth keeping:
+
+- Decoding rejects rather than returning empty. A link whose payload is corrupt reports that in the interface, because silently presenting an empty form looks like a tool that ran and found nothing.
+- Decoded payloads are capped at `MAX_DECODED_BYTES`, so a hostile link can't hand the parser an unbounded string.
+
+Typing doesn't rewrite the URL. Links are produced only by the **Copy link** control, which keeps history clean and avoids recompressing on every keystroke.
+
 ## Limitations
 
 - Blocks in different hunks of the same file appear as top-level siblings, because the paste doesn't say how they're really related. Paste the whole pattern into the before-and-after tab when that relationship matters.
@@ -168,6 +186,7 @@ The heading survives because it hashes identically and pairs during the anchor p
 - Balancing infers nesting that isn't in the paste. The affected blocks are marked, but the inference can still be wrong if the hunk is unusually fragmentary.
 - The match threshold is a fixed `0.5`. A block rewritten past that point is reported as an addition and a removal rather than as a change.
 - Attribute moves need an ancestor or descendant relationship, so a property that moves between sibling blocks isn't reported as a move.
+- A shared link carries the diff itself, so a very large paste makes a very long URL. Typical pattern changes stay well under a kilobyte or two, but a whole-theme diff may not be practical to link.
 - Matching is greedy rather than an optimal assignment. Given several near-equal candidates, it takes the first best score.
 
 ## Testing

@@ -18,6 +18,36 @@ This tool answers the questions a line diff can't: which block moved, which pare
 
 Toggle **Unchanged blocks** to hide everything that didn't move or change, and **All attributes** to see a block's unchanged attributes alongside its changed ones.
 
+## Linking to a diff
+
+The tool reads a diff out of the URL, so a CI job can post a comment that links straight to a rendered view. Use **Copy link** in the toolbar to produce one by hand.
+
+Query parameters, all optional:
+
+| Key | Holds |
+| --- | --- |
+| `d` | A unified diff, opened in the **Paste a diff** tab |
+| `a`, `b` | Before and after markup, opened in the **Before / after** tab |
+| `view` | `unified` or `sbs` |
+
+Payloads are gzipped, then base64url-encoded, then prefixed with `z`. Compression is not an optimisation here: block markup is repetitive enough that a 20-file paste encodes to under 1.5 kB, where plain base64 of the same paste runs past 60 kB and would not survive as a link. A payload prefixed `u` instead of `z` is read as plain base64url, which is easier to produce by hand.
+
+Building a link needs no dependencies on Node 18 or newer:
+
+```js
+function shareLink( diff, base = 'https://humanmade.github.io/block-pattern-diff/' ) {
+	const gzip = new CompressionStream( 'gzip' );
+	const writer = gzip.writable.getWriter();
+	writer.write( new TextEncoder().encode( diff ) );
+	writer.close();
+	return new Response( gzip.readable )
+		.arrayBuffer()
+		.then( ( buf ) => `${ base }?d=z${ Buffer.from( buf ).toString( 'base64url' ) }` );
+}
+```
+
+A link that can't be decoded says so in the interface rather than opening an empty form.
+
 ## How it works
 
 Six stages: split the paste into files and hunks, repair the block delimiters each hunk cuts through, parse both sides into normalized trees, match those trees, detect attributes that jumped between blocks, then merge everything into one structure that both views render from.

@@ -28,6 +28,8 @@ For the details, including why the delimiter repair isn't optional and how the m
 
 ## Development
 
+Styling consumes the Human Made design tokens. `src/brand-tokens.css` is a verbatim copy of `assets/tokens.css` from [hm-brand-guidelines](https://github.com/humanmade/hm-brand-guidelines); re-sync it by copying that file over this one rather than editing it here. `src/styles.css` holds everything specific to this tool and defines no colours of its own.
+
 ```sh
 npm install
 npm run dev     # local server

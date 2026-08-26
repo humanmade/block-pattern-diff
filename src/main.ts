@@ -1,3 +1,4 @@
+import './brand-tokens.css';
 import './styles.css';
 import { parseDocument, type ParsedDocument } from './lib/blocks';
 import { splitUnifiedDiff, type DiffFile } from './lib/diffInput';

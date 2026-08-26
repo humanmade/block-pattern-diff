@@ -3,23 +3,52 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Block Pattern Diff</title>
+		<title>Block Pattern Diff — Human Made</title>
 		<meta
 			name="description"
 			content="Expand a diff of WordPress block pattern markup into a hierarchical view of what actually changed."
 		/>
+
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=Sora:wght@300;500;700&display=swap"
+			rel="stylesheet"
+		/>
 	</head>
 	<body>
-		<header class="masthead">
-			<h1>Block Pattern Diff</h1>
-			<p>
-				Paste a diff of WordPress block pattern markup. It is re-parsed as blocks on both
-				sides and compared as a tree, so re-nesting and migrated attributes read as moves
-				rather than as wholesale rewrites. Whitespace-only changes are ignored.
-			</p>
-		</header>
+		<main class="page">
+			<header class="masthead">
+				<div class="masthead__brand">
+					<a href="https://hm-brand-guidelines.tools.hmn.md/" aria-label="Human Made">
+						<img class="masthead__lockup" src="/hm-logo.svg" alt="Human Made" />
+					</a>
+					<span class="masthead__brand-text">Block Pattern Diff</span>
+				</div>
+				<nav class="masthead__nav" aria-label="Primary">
+					<a href="https://hm-brand-guidelines.tools.hmn.md/tools/">Tools</a>
+					<a href="https://hm-brand-guidelines.tools.hmn.md/">Brand Guidelines</a>
+					<a href="https://github.com/humanmade/block-pattern-diff">GitHub</a>
+				</nav>
+			</header>
 
-		<main>
+			<section class="hero hero--compact" aria-labelledby="hero-title">
+				<p class="hero__kicker">
+					<span>Human Made</span>
+					<span>Pattern tooling</span>
+				</p>
+				<h1 id="hero-title" class="hero__title">
+					<span class="hero__title-line hero__title-line--display">Block pattern diff</span>
+				</h1>
+				<p class="hero__sub">
+					Paste a diff of WordPress block pattern markup. Both sides are re-parsed as blocks
+					and compared as a tree, so re-nesting and migrated attributes read as moves rather
+					than as wholesale rewrites. Whitespace-only changes are ignored.
+				</p>
+			</section>
+
 			<section class="panel" aria-label="Input">
 				<div class="tabs" role="tablist">
 					<button type="button" role="tab" class="tab is-active" data-mode="diff">
@@ -75,11 +104,17 @@
 				<p class="notice is-hidden" id="notice"></p>
 				<div id="output" class="output"></div>
 			</section>
-		</main>
 
-		<footer class="colophon">
-			<a href="https://github.com/humanmade/block-pattern-diff">Source on GitHub</a>
-		</footer>
+			<footer class="colophon">
+				<div class="colophon__col">
+					<p>
+						A Human Made tool. Everything happens in your browser; nothing you paste leaves
+						this page. Source and architecture notes on
+						<a href="https://github.com/humanmade/block-pattern-diff">GitHub</a>.
+					</p>
+				</div>
+			</footer>
+		</main>
 
 		<script type="module" src="/src/main.ts"></script>
 	</body>

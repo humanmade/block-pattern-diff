@@ -1,0 +1,211 @@
+/* Vendored from the Human Made brand guidelines: assets/tokens.css,
+   the portable token export for external projects.
+   Source: https://github.com/humanmade/hm-brand-guidelines
+   Re-sync by copying that file over this one; do not edit locally.
+   Project styling lives in styles.css and consumes these tokens. */
+/* ============================================================
+   Human Made — design tokens
+   ============================================================
+   NOTE: this file is the portable export for external projects.
+   The site itself loads its own copy of these tokens from
+   assets/site.css. If you change semantic tokens here, mirror
+   the change in site.css too.
+
+   Two layers:
+     1. Primitives  — 7 families × 10 perceptual steps (50–900),
+                      derived in OKLCH and gamut-mapped to sRGB.
+                      Anchored to HM brand colours where they exist.
+                      Internal use; do not reference from components.
+     2. Semantic    — role-based aliases. Reference these from CSS.
+
+   Locked HM anchors:
+     --c-red-500     = #FF424A (HM Primary)
+     --c-blue-500    = #5B92E3 (HM Button Hover)
+     --c-blue-600    = #1F63C8 (HM Button)
+     --c-green-400   = #00CC66 (Audits / security pass)
+     --c-neutral-900 = #131313 (HM Main)
+
+   Required Google Fonts (Sora + Hanken Grotesk):
+     <link rel="preconnect" href="https://fonts.googleapis.com">
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600;700&family=Sora:wght@300;500;700&display=swap" rel="stylesheet">
+   ============================================================ */
+
+:root {
+
+  /* ── Primitives ────────────────────────────────────────────── */
+
+  /* red — brand identity */
+  --c-red-50:  #FFF8F8;  --c-red-100: #FFEFEE;  --c-red-200: #FFDDDA;
+  --c-red-300: #FFC3BE;  --c-red-400: #FF8F8A;  --c-red-500: #FF424A;
+  --c-red-600: #D60B2A;  --c-red-700: #A2001C;  --c-red-800: #6A000E;
+  --c-red-900: #320003;
+
+  /* crimson — destructive / danger (cooler red, distinct from brand) */
+  --c-crimson-50:  #FFF8F9;  --c-crimson-100: #FFEFF1;  --c-crimson-200: #FFDCE2;
+  --c-crimson-300: #FFC1CC;  --c-crimson-400: #FF8BA5;  --c-crimson-500: #F04E7E;
+  --c-crimson-600: #C92960;  --c-crimson-700: #9B1246;  --c-crimson-800: #66022A;
+  --c-crimson-900: #310010;
+
+  /* amber — warning */
+  --c-amber-50:  #FFF9F1;  --c-amber-100: #FFF1DF;  --c-amber-200: #FFE1B9;
+  --c-amber-300: #FFCA7F;  --c-amber-400: #EFA200;  --c-amber-500: #C38400;
+  --c-amber-600: #9A6700;  --c-amber-700: #744C00;  --c-amber-800: #4A2F00;
+  --c-amber-900: #211300;
+
+  /* green — success */
+  --c-green-50:  #EFFFF2;  --c-green-100: #D9FFE1;  --c-green-200: #ABFDBF;
+  --c-green-300: #74F39B;  --c-green-400: #00CC66;  --c-green-500: #00AF57;
+  --c-green-600: #008A43;  --c-green-700: #006730;  --c-green-800: #00411C;
+  --c-green-900: #001D09;
+
+  /* sky — info / neutral notice */
+  --c-sky-50:  #F4FBFF;  --c-sky-100: #E6F7FF;  --c-sky-200: #C8EDFF;
+  --c-sky-300: #9DDFFF;  --c-sky-400: #24C4FF;  --c-sky-500: #00A0D3;
+  --c-sky-600: #007EA7;  --c-sky-700: #005E7D;  --c-sky-800: #003B50;
+  --c-sky-900: #001925;
+
+  /* blue — interaction */
+  --c-blue-50:  #F7FAFF;  --c-blue-100: #EDF4FF;  --c-blue-200: #D8E7FF;
+  --c-blue-300: #BBD6FF;  --c-blue-400: #86B5FF;  --c-blue-500: #5B92E3;
+  --c-blue-600: #1F63C8;  --c-blue-700: #1551A8;  --c-blue-800: #073270;
+  --c-blue-900: #011436;
+
+  /* neutral — ink, surface, line */
+  --c-neutral-50:  #FBFAFA;  --c-neutral-100: #F4F3F3;  --c-neutral-200: #E8E5E5;
+  --c-neutral-300: #D7D3D3;  --c-neutral-400: #B7B3B2;  --c-neutral-500: #959190;
+  --c-neutral-600: #767271;  --c-neutral-700: #585454;  --c-neutral-800: #373534;
+  --c-neutral-900: #131313;
+
+  /* ── Semantic layer ────────────────────────────────────────── */
+
+  /* brand */
+  --c-brand-primary:        var(--c-red-500);     /* HM Primary — the mark, hero accents */
+  --c-brand-emphasis:       var(--c-red-700);     /* deeper red for hover-on-brand etc */
+  --c-brand-soft:           var(--c-red-50);      /* tinted brand surface for callouts */
+
+  /* ink (text) */
+  --c-ink-strong:           var(--c-neutral-900); /* HM Main — body text, headlines */
+  --c-ink-default:          var(--c-neutral-800); /* slightly softer body weight */
+  --c-ink-muted:            var(--c-neutral-700); /* secondary body, lede, meta */
+  --c-ink-subtle:           var(--c-neutral-600); /* captions, smallest text */
+  --c-ink-on-emphasis:      var(--c-neutral-50);  /* text on dark surfaces */
+  --c-ink-link:             var(--c-blue-600);    /* HM Button — primary action, links */
+  --c-ink-link-hover:       var(--c-blue-500);    /* HM Button Hover */
+
+  /* surface (backgrounds) */
+  --c-surface-page:         var(--c-neutral-50);  /* default page background */
+  --c-surface-raised:       #FFFFFF;              /* cards, raised panels */
+  --c-surface-sunken:       var(--c-neutral-100); /* inset / pressed */
+  --c-surface-emphasis:     var(--c-neutral-900); /* dark inverse surface */
+  --c-surface-brand-soft:   var(--c-red-50);      /* hero / brand callouts */
+  --c-surface-action-soft:  var(--c-blue-50);     /* selected, focus tint */
+
+  /* line (borders & dividers) */
+  --c-line-soft:            var(--c-neutral-200); /* hairline, low contrast */
+  --c-line-default:         var(--c-neutral-300); /* default border */
+  --c-line-strong:          var(--c-neutral-500); /* on light surface, needs to read */
+  --c-line-on-emphasis:     var(--c-neutral-700); /* border on dark surface */
+
+  /* action (interactive) */
+  --c-action-primary:       var(--c-blue-600);    /* HM Button */
+  --c-action-primary-hover: var(--c-blue-500);    /* HM Button Hover */
+  --c-action-primary-soft:  var(--c-blue-50);     /* button-soft / selected bg */
+
+  /* signal (feedback / status) */
+  --c-signal-success:       var(--c-green-400);   /* HM audit green */
+  --c-signal-success-soft:  var(--c-green-50);
+  --c-signal-warning:       var(--c-amber-400);
+  --c-signal-warning-soft:  var(--c-amber-50);
+  --c-signal-danger:        var(--c-crimson-600);
+  --c-signal-danger-soft:   var(--c-crimson-50);
+  --c-signal-info:          var(--c-sky-600);
+  --c-signal-info-soft:     var(--c-sky-50);
+
+  /* ── Typography ────────────────────────────────────────────── */
+
+  /* Sora — headers and structural display only.
+     Hanken Grotesk — body, lede, labels, captions, inline UI text.
+     DM Sans — social media posts only (Instagram, LinkedIn, X). */
+  --font-display: 'Sora', system-ui, sans-serif;
+  --font-body:    'Hanken Grotesk', system-ui, sans-serif;
+  --font-social:  'DM Sans', system-ui, sans-serif;
+
+  /* Fluid type scale */
+  --fs-x-small:   clamp(.9rem,   1.5vw, 1rem);
+  --fs-small:     clamp(1rem,    1.6vw, 1.2rem);
+  --fs-base:      clamp(1.13rem, 1.8vw, 1.3rem);
+  --fs-medium:    clamp(1.3rem,  2.2vw, 1.6rem);
+  --fs-large:     clamp(1.5rem,  3vw,   2rem);
+  --fs-x-large:   clamp(2rem,    4vw,   2.8rem);
+  --fs-xx-large:  clamp(2.6rem,  6vw,   3.75rem);
+  --fs-xxx-large: clamp(3rem,    8vw,   4.8rem);
+
+  /* Line-heights */
+  --lh-none:    1;
+  --lh-tight:   1.1;
+  --lh-snug:    1.2;
+  --lh-normal:  1.5;
+  --lh-relaxed: 1.625;
+  --lh-loose:   2;
+
+  /* Weights — Sora ships 300/500/700; Hanken ships 300/400/500/600/700 */
+  --fw-light:    300;
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-bold:     700;
+
+  /* ── Spacing (fluid) ───────────────────────────────────────── */
+  --sp-small:      clamp(.5rem,  2.5vw, 1rem);
+  --sp-medium:     clamp(1.5rem, 4vw,   2rem);
+  --sp-large:      clamp(2rem,   5vw,   3rem);
+  --sp-x-large:    clamp(3rem,   7vw,   5rem);
+  --sp-xx-large:   clamp(4rem,   9vw,   7rem);
+  --sp-xxx-large:  clamp(5rem,  12vw,   9rem);
+  --sp-xxxx-large: clamp(6rem,  14vw,  13rem);
+
+  /* ── Radius ────────────────────────────────────────────────── */
+  --radius-button: 100px;  /* pill — buttons and inputs */
+  --radius-card:   16px;   /* cards, panels, raised components */
+}
+
+/* ── Page baseline ───────────────────────────────────────────── */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--c-surface-page);
+  color: var(--c-ink-strong);
+  font-family: var(--font-body);
+  font-weight: 400;
+  line-height: var(--lh-relaxed);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, h6 { font-family: var(--font-display); }
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+img, svg { display: block; max-width: 100%; }
+
+::selection { background: var(--c-action-primary); color: var(--c-ink-on-emphasis); }
+
+/* ── Accessibility ───────────────────────────────────────────── */
+
+:where(a, button, [role="button"], input, select, textarea):focus-visible {
+  outline: 2px solid var(--c-action-primary);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

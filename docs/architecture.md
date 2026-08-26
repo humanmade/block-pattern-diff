@@ -17,20 +17,33 @@ The tool runs six stages. Each one hands a data structure to the next.
 
 | Stage | Module | Input | Output |
 | --- | --- | --- | --- |
-| 1. Split | `src/lib/diffInput.ts` | Pasted diff text | Two markup documents |
+| 1. Split | `src/lib/diffInput.ts` | Pasted diff text | One entry per file, each holding its hunks |
 | 2. Balance | `src/lib/balance.ts` | One markup document | Balanced markup, plus a record of what was invented |
-| 3. Parse | `src/lib/blocks.ts` | Balanced markup | A normalized, hashed block tree |
+| 3. Parse | `src/lib/blocks.ts` | Balanced markup | A normalized, hashed block tree per side |
 | 4. Match | `src/lib/treeDiff.ts` | Two block trees | Node pairs, classified as added, removed, changed, or moved |
 | 5. Attribute moves | `src/lib/treeDiff.ts` | Classified pairs | Attributes that jumped between blocks |
 | 6. Merge | `src/lib/merge.ts` | Everything above | One tree holding both sides, ready to render |
 
 ## Stage 1: Split the pasted diff
 
-A unified diff is a line-prefixed format, so reconstructing the two sides takes one pass. `splitUnifiedDiff()` sends lines that start with `-` to the before document, lines that start with `+` to the after document, and every other line to both. It discards Git and hunk headers such as `diff --git`, `@@`, `--- a/`, and `+++ b/`.
+A unified diff is a line-prefixed format, so reconstructing the two sides takes one pass. `splitUnifiedDiff()` sends lines that start with `-` to the before document, lines that start with `+` to the after document, and every other line to both. It discards Git headers such as `diff --git` and `index`.
 
 Unprefixed lines count as context on both sides. This is deliberate: pastes that lose their leading context spaces are common, and treating them as context keeps those pastes usable.
 
 The function reports whether it saw any `+` or `-` lines at all. If it saw none, the interface tells you the paste is plain markup rather than a diff, and points you at the before-and-after input tab.
+
+### Regions that aren't contiguous must stay apart
+
+The function returns a `DiffFile` per file, and each file keeps its hunks as separate strings. Both splits exist for the same reason: text that isn't contiguous in the original file must not be parsed as though it were.
+
+`diff --git` starts a new file. Plain `diff -u` output has no such line, so a second `---` header also starts one. Paths come from the `+++` header, which names the file as it exists now, and fall back to `---` for deletions. Each `@@` line starts a new hunk segment.
+
+Skipping either split produces wrong output, not just untidy output:
+
+- **Across files.** If two files are concatenated, the matcher can pair blocks in one file with blocks in another. A block deleted from one file and added to another then pairs with itself, the deletion cancels the addition, and the tool reports that nothing changed.
+- **Across hunks.** The file's own content sits between two hunks, and the paste doesn't include it. A block left open at the end of one hunk would adopt the blocks of the next, inventing nesting the file doesn't have. In practice this turns one changed block into a removal and an addition at different depths.
+
+Blocks from different hunks therefore appear as siblings at the top level of the tree. That is not a claim that they are siblings in the file, only that their real relationship isn't in the paste. The interface notes the hunk count on any file that has more than one.
 
 ## Stage 2: Balance the block delimiters
 
@@ -48,7 +61,7 @@ The function returns the repaired text along with the names it had to invent. `p
 
 ## Stage 3: Parse and normalize
 
-`parseDocument()` parses each side with `@wordpress/block-serialization-default-parser`, the parser WordPress itself uses. It's published to npm and has no WordPress dependency.
+`parseDocument()` takes one string per hunk, balances and parses each on its own, then places the results side by side at the top level. It uses `@wordpress/block-serialization-default-parser`, the parser WordPress itself uses. That package is published to npm and has no WordPress dependency.
 
 The parser returns a block name, an attributes object, inner blocks, and `innerHTML`: the block's own wrapper markup with its children removed. Normalization then does four things:
 
@@ -150,6 +163,7 @@ The heading survives because it hashes identically and pairs during the anchor p
 
 ## Limitations
 
+- Blocks in different hunks of the same file appear as top-level siblings, because the paste doesn't say how they're really related. Paste the whole pattern into the before-and-after tab when that relationship matters.
 - A context line whose content starts with `-` or `+` is read as a change. Pattern markup rarely does this, but body text can. Use the before-and-after input tab when it happens.
 - Balancing infers nesting that isn't in the paste. The affected blocks are marked, but the inference can still be wrong if the hunk is unusually fragmentary.
 - The match threshold is a fixed `0.5`. A block rewritten past that point is reported as an addition and a removal rather than as a change.

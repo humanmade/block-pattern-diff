@@ -5,9 +5,9 @@ import { EXAMPLE_DIFF } from './example';
 import { diffTrees } from './treeDiff';
 
 function run( source: string ) {
-	const input = splitUnifiedDiff( source );
-	const before = parseDocument( input.before, 'a' );
-	const after = parseDocument( input.after, 'b' );
+	const [ file ] = splitUnifiedDiff( source ).files;
+	const before = parseDocument( file.before, 'a' );
+	const after = parseDocument( file.after, 'b' );
 	return { before, after, diff: diffTrees( before, after ) };
 }
 

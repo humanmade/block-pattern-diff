@@ -6,9 +6,9 @@ import { flattenRows, mergeTrees, summarize } from './merge';
 import { diffTrees } from './treeDiff';
 
 function merged( source: string ) {
-	const input = splitUnifiedDiff( source );
-	const before = parseDocument( input.before, 'a' );
-	const after = parseDocument( input.after, 'b' );
+	const [ file ] = splitUnifiedDiff( source ).files;
+	const before = parseDocument( file.before, 'a' );
+	const after = parseDocument( file.after, 'b' );
 	return mergeTrees( before, after, diffTrees( before, after ) );
 }
 

@@ -33,7 +33,38 @@ export interface ParsedDocument {
 	unclosed: string[];
 }
 
-export function parseDocument( source: string, side: string ): ParsedDocument {
+/**
+ * Parses one side of a file. Pass one string per hunk: each is balanced and
+ * parsed on its own, then the results sit side by side at the top level.
+ * Joining hunks first would let a block opened in one hunk adopt blocks from
+ * the next, which invents nesting the file does not have.
+ */
+export function parseDocument( source: string | string[], side: string ): ParsedDocument {
+	const segments = Array.isArray( source ) ? source : [ source ];
+	const roots: BlockNode[] = [];
+	const nodes: BlockNode[] = [];
+	const unopened: string[] = [];
+	const unclosed: string[] = [];
+
+	segments.forEach( ( segment, index ) => {
+		const prefix = segments.length > 1 ? `${ side }#${ index }` : side;
+		const parsed = parseSegment( segment, prefix );
+		roots.push( ...parsed.roots );
+		nodes.push( ...parsed.nodes );
+		unopened.push( ...parsed.unopened );
+		unclosed.push( ...parsed.unclosed );
+	} );
+
+	// Roots from later segments restart at zero, and sibling rank depends on
+	// this being the position across the whole side.
+	roots.forEach( ( root, index ) => {
+		root.index = index;
+	} );
+
+	return { roots, nodes, unopened, unclosed };
+}
+
+function parseSegment( source: string, side: string ): ParsedDocument {
 	const balanced = balance( source );
 	const roots: BlockNode[] = [];
 	const nodes: BlockNode[] = [];

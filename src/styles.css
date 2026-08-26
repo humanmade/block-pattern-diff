@@ -226,6 +226,71 @@ textarea:focus-visible {
 	color: var( --muted );
 }
 
+/* Per-file sections */
+
+.file {
+	border: 1px solid var( --border );
+	border-radius: 6px;
+	margin-bottom: 0.6rem;
+}
+
+.file[ open ] > .file__head {
+	border-bottom: 1px solid var( --border );
+}
+
+.file__head {
+	display: flex;
+	align-items: baseline;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+	padding: 0.35rem 0.6rem;
+	cursor: pointer;
+	background: var( --bg );
+	border-radius: 5px;
+}
+
+.file__path {
+	font-family: var( --mono );
+	font-size: 12.5px;
+	font-weight: 600;
+}
+
+.file__stats {
+	margin-left: auto;
+	font-size: 0.78rem;
+	color: var( --muted );
+	font-variant-numeric: tabular-nums;
+}
+
+.file__note {
+	margin: 0;
+	padding: 0.4rem 0.6rem;
+	font-size: 0.78rem;
+	color: var( --muted );
+	border-bottom: 1px solid var( --border );
+}
+
+.file__body {
+	padding: 0.5rem;
+	overflow-x: auto;
+}
+
+.file__stats .s-added {
+	color: var( --added );
+}
+
+.file__stats .s-removed {
+	color: var( --removed );
+}
+
+.file__stats .s-changed {
+	color: var( --changed );
+}
+
+.file__stats .s-moved {
+	color: var( --moved );
+}
+
 /* Unified tree */
 
 .tree {

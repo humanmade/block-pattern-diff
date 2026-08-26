@@ -8,9 +8,9 @@ import { diffTrees } from '../lib/treeDiff';
 import { renderSideBySide, renderUnified } from './views';
 
 function build( source: string ) {
-	const input = splitUnifiedDiff( source );
-	const before = parseDocument( input.before, 'a' );
-	const after = parseDocument( input.after, 'b' );
+	const [ file ] = splitUnifiedDiff( source ).files;
+	const before = parseDocument( file.before, 'a' );
+	const after = parseDocument( file.after, 'b' );
 	const diff = diffTrees( before, after );
 	return { rows: mergeTrees( before, after, diff ), diff };
 }

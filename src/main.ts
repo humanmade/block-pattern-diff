@@ -1,9 +1,10 @@
 import './styles.css';
 import { parseDocument, type ParsedDocument } from './lib/blocks';
-import { splitUnifiedDiff } from './lib/diffInput';
+import { splitUnifiedDiff, type DiffFile } from './lib/diffInput';
 import { EXAMPLE_DIFF } from './lib/example';
-import { mergeTrees, summarize } from './lib/merge';
+import { mergeTrees, summarize, type DiffStats } from './lib/merge';
 import { diffTrees } from './lib/treeDiff';
+import { fileSection, statChips } from './render/fileSection';
 import { renderSideBySide, renderUnified, type ViewOptions } from './render/views';
 
 type Mode = 'diff' | 'panes';
@@ -24,9 +25,12 @@ const showAllAttrs = $< HTMLInputElement >( '#show-all-attrs' );
 let mode: Mode = 'diff';
 let view: View = 'unified';
 
-function sources(): { before: string; after: string; warnings: string[] } {
+function sources(): { files: DiffFile[]; warnings: string[] } {
 	if ( mode === 'panes' ) {
-		return { before: beforeInput.value, after: afterInput.value, warnings: [] };
+		return {
+			files: [ { path: null, before: [ beforeInput.value ], after: [ afterInput.value ] } ],
+			warnings: [],
+		};
 	}
 	const split = splitUnifiedDiff( diffInput.value );
 	const warnings =
@@ -35,16 +39,15 @@ function sources(): { before: string; after: string; warnings: string[] } {
 					'No + or - lines here, so both sides are identical. Use the Before / after tab to compare two versions of a pattern.',
 			  ]
 			: [];
-	return { before: split.before, after: split.after, warnings };
+	return { files: split.files, warnings };
 }
 
 /** Blocks we had to invent delimiters for are flagged in the tree; say so once, up top. */
-function truncationWarning( before: ParsedDocument, after: ParsedDocument ): string | null {
-	const count =
-		before.unopened.length +
-		before.unclosed.length +
-		after.unopened.length +
-		after.unclosed.length;
+function truncationWarning( documents: ParsedDocument[] ): string | null {
+	const count = documents.reduce(
+		( total, doc ) => total + doc.unopened.length + doc.unclosed.length,
+		0
+	);
 	if ( ! count ) {
 		return null;
 	}
@@ -54,49 +57,60 @@ function truncationWarning( before: ParsedDocument, after: ParsedDocument ): str
 }
 
 function render(): void {
-	const { before: beforeSource, after: afterSource, warnings } = sources();
+	const { files, warnings } = sources();
+	const usable = files.filter( ( file ) => hasContent( file.before ) || hasContent( file.after ) );
 
-	if ( ! beforeSource.trim() && ! afterSource.trim() ) {
+	if ( ! usable.length ) {
 		output.replaceChildren();
 		stats.textContent = '';
-		setNotice( [] );
+		setNotice( warnings );
 		return;
 	}
-
-	const before = parseDocument( beforeSource, 'a' );
-	const after = parseDocument( afterSource, 'b' );
-	const diff = diffTrees( before, after );
-	const rows = mergeTrees( before, after, diff );
-
-	const truncated = truncationWarning( before, after );
-	setNotice( truncated ? [ ...warnings, truncated ] : warnings );
 
 	const options: ViewOptions = {
 		showUnchanged: showUnchanged.checked,
 		showAllAttrs: showAllAttrs.checked,
 	};
-	output.replaceChildren(
-		view === 'unified'
-			? renderUnified( rows, diff, options )
-			: renderSideBySide( rows, options )
-	);
+	const totals: DiffStats = { added: 0, removed: 0, changed: 0, moved: 0, unchanged: 0 };
+	const documents: ParsedDocument[] = [];
+	const sections: HTMLElement[] = [];
 
-	const counts = summarize( rows );
-	stats.replaceChildren();
-	const parts: Array< [ string, number ] > = [
-		[ 'added', counts.added ],
-		[ 'removed', counts.removed ],
-		[ 'changed', counts.changed ],
-		[ 'moved', counts.moved ],
-	];
-	for ( const [ name, value ] of parts.filter( ( [ , value ] ) => value > 0 ) ) {
-		const chip = document.createElement( 'span' );
-		chip.className = `s-${ name }`;
-		chip.append( Object.assign( document.createElement( 'b' ), { textContent: String( value ) } ) );
-		chip.append( ` ${ name }` );
-		stats.append( chip, '  ' );
+	// Each file is parsed and matched on its own. Matching across files would
+	// pair a block deleted from one with an identical block added to another.
+	for ( const file of usable ) {
+		const before = parseDocument( file.before, 'a' );
+		const after = parseDocument( file.after, 'b' );
+		documents.push( before, after );
+
+		const diff = diffTrees( before, after );
+		const rows = mergeTrees( before, after, diff );
+		const counts = summarize( rows );
+		for ( const key of Object.keys( totals ) as Array< keyof DiffStats > ) {
+			totals[ key ] += counts[ key ];
+		}
+
+		const body =
+			view === 'unified'
+				? renderUnified( rows, diff, options )
+				: renderSideBySide( rows, options );
+		sections.push(
+			usable.length > 1 ? fileSection( file.path, counts, file.before.length, body ) : body
+		);
 	}
-	stats.append( `${ counts.unchanged } unchanged` );
+
+	output.replaceChildren( ...sections );
+
+	const truncated = truncationWarning( documents );
+	setNotice( truncated ? [ ...warnings, truncated ] : warnings );
+
+	stats.replaceChildren( ...statChips( totals ) );
+	if ( usable.length > 1 ) {
+		stats.prepend( `${ usable.length } files  ` );
+	}
+}
+
+function hasContent( segments: string[] ): boolean {
+	return segments.some( ( segment ) => segment.trim() !== '' );
 }
 
 function setNotice( messages: string[] ): void {
